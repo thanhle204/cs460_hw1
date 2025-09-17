@@ -42,44 +42,4 @@ class RectangleShape(Node):
             if now - self.start_time > self.FWD_TIME:
                 # one side done
                 self.segment += 1
-                self.start_time = now
-
-                # brake one tick to avoid drifting
-                self.pub.publish(Twist())
-
-                # only turn after the first 3 sides; on the 4th, just stop
-                if self.segment < 4:
-                    self.state = 'turn'
-                else:
-                    self.state = 'stop'
-
-        elif self.state == 'turn':
-            # turn left ~90 degrees
-            msg.linear.x = 0.0
-            msg.angular.z = self.TURN_SPD
-
-            if now - self.start_time > self.TURN_TIME:
-                # finish turning, brake, then go forward again
-                self.pub.publish(Twist())
-                self.start_time = now
-                self.state = 'forward'
-
-        elif self.state == 'stop':
-            # final hard stop at the end of the 4th side
-            self.pub.publish(Twist())
-            self.get_logger().info('Rectangle completed. Turtle stopped.')
-            rclpy.shutdown()
-            return
-
-        # publish command
-        self.pub.publish(msg)
-
-def main(args=None):
-    rclpy.init(args=args)
-    node = RectangleShape()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
-
-if __name__ == '__main__':
-    main()
+         
